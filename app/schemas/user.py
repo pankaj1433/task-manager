@@ -23,3 +23,7 @@ class User(UserBase):
         json_encoders = {
             datetime: lambda v: v.isoformat(),
         }
+
+
+class TokenData(BaseModel):
+    username: Optional[str] = None
