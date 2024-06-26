@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.orm import Session
 from app.schemas.user import User, UserCreate
 from app.deps import get_db
@@ -10,6 +11,7 @@ from app.services.user_service import (
 
 public_router = APIRouter(prefix="/users")
 internal_router = APIRouter(prefix="/internal/users")
+auth_scheme = HTTPBearer()
 
 
 @public_router.post("", response_model=User)
@@ -21,7 +23,11 @@ def create_user(user: UserCreate, db: Session = Depends(get_db)):
 
 
 @internal_router.get("/current", response_model=User)
-def get_current_user_details(request: Request, db: Session = Depends(get_db)):
+def get_current_user_details(
+    request: Request,
+    db: Session = Depends(get_db),
+    token: HTTPAuthorizationCredentials = Depends(auth_scheme),
+):
     user = request.state.user
     db_user = get_user_by_username(db, user.username)
     # if None in db_user:

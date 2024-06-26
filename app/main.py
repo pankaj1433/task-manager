@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from app.core.config import settings
 from app.routes import router
-from app.models import user
+from app.models import user, task
 from app.database import engine
 from app.middleware.auth_middleware import AuthMiddleware
 
@@ -11,6 +11,7 @@ def create_app() -> FastAPI:
 
     # bind models
     user.Base.metadata.create_all(bind=engine)
+    task.Base.metadata.create_all(bind=engine)
 
     # configure middlewares
     app.add_middleware(AuthMiddleware)
